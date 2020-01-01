@@ -52,17 +52,23 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if jump_flag == False:
-        	if event.type == pygame.KEYDOWN:
-        		if event.key == pygame.K_SPACE:
-        			jump_flag = True
-        elif jump_flag == True:
-            y -= (count_jump ** 2) / 2
-            count_jump -= 1
-            all_sprites.update([x, y])
+    if jump_flag == False:
+        if event.type == pygame.KEYDOWN:
+        	if event.key == pygame.K_SPACE:
+        		jump_flag = True
+    else:
+    	if count_jump >= -10:
+    		if count_jump < 0:
+    			y += ((count_jump ** 2) / 2)
+    		else:
+    		    y -= (count_jump ** 2) / 2
+    		count_jump -= 1
+    		all_sprites.update([x, y])
+    	else:
+    		jump_flag = False
+    		count_jump = 10
 
-               
-               
+        
             
     screen.fill(BLUE)
     all_sprites.draw(screen)
