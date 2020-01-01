@@ -9,8 +9,8 @@ pygame.init()
 size = width, height = 900, 650
 screen = pygame.display.set_mode(size)
 screen.fill(BLUE)
-x = 300
-y = 300
+x = 0
+y =580
 
 def load_image(name, colorkey=None, color_key=None):
     fullname = os.path.join('data', name)
@@ -52,21 +52,26 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    if jump_flag == False:
-        if event.type == pygame.KEYDOWN:
-        	if event.key == pygame.K_SPACE:
-        		jump_flag = True
-    else:
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_SPACE:
+        	jump_flag = True
+        	if 0 < count_jump < 9:
+        		count_jump = 10
+    if jump_flag == True:
     	if count_jump >= -10:
     		if count_jump < 0:
-    			y += ((count_jump ** 2) / 2)
+    			y += (count_jump ** 2) / 2
     		else:
     		    y -= (count_jump ** 2) / 2
+
     		count_jump -= 1
     		all_sprites.update([x, y])
     	else:
+    		if y < 580:
+    			y = min(580, (count_jump ** 2) / 2)
     		jump_flag = False
     		count_jump = 10
+
 
         
             
