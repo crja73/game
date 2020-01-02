@@ -55,8 +55,7 @@ while running:
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_SPACE:
         	jump_flag = True
-        	if 0 < count_jump < 29:
-        		count_jump = 30
+        	count_jump = 30
     if jump_flag == True:
     	if count_jump >= -30:
     		y -= count_jump / 2
