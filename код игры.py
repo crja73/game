@@ -55,22 +55,19 @@ while running:
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_SPACE:
         	jump_flag = True
-        	if 0 < count_jump < 9:
-        		count_jump = 10
+        	if 0 < count_jump < 29:
+        		count_jump = 30
     if jump_flag == True:
-    	if count_jump >= -10:
-    		if count_jump < 0:
-    			y += (count_jump ** 2) / 2
-    		else:
-    		    y -= (count_jump ** 2) / 2
-
+    	if count_jump >= -30:
+    		y -= count_jump / 2
     		count_jump -= 1
-    		all_sprites.update([x, y])
     	else:
-    		if y < 580:
-    			y = min(580, (count_jump ** 2) / 2)
-    		jump_flag = False
-    		count_jump = 10
+    		if y < 600:
+    			y = min(600, (y - count_jump / 2))
+    			count_jump -= 1
+    		else:
+    			count_jump = 30
+    			jump_flag = False
 
 
         
