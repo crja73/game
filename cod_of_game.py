@@ -10,12 +10,16 @@ from PyQt5.QtGui import QPixmap
 
 
 playing = False
-
 pygame.mixer.pre_init(44100, -16, 2, 2048)
 pygame.mixer.init()
 snd_dir = path.join(path.dirname(__file__), 'data')
 shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
 shoot_sound2 = pygame.mixer.Sound(path.join(snd_dir, 'pew paw.wav'))
+shoot_sound3 = pygame.mixer.Sound(path.join(snd_dir, 'the_vagabond.wav'))
+shoot_sound3.play()
+
+
+
 
 class MyWidget(QMainWindow):
 	def __init__(self):
@@ -56,6 +60,7 @@ class MyWidget(QMainWindow):
 		self.third_form = ThirdForm()
 		self.third_form.show()
 
+
 class SecondForm(QMainWindow):
 	def __init__(self):
 		super().__init__()
@@ -69,15 +74,17 @@ class ThirdForm(QMainWindow):
 		lines = w.readlines()
 		self.label.setText('\n'.join(lines))
 
+
+
 class FourthForm(QMainWindow):
 	def __init__(self, arg):
 		super().__init__()
 		playing = arg
 
 		if playing == True:
-			BLUE = (0, 0, 255)
+			BLUE = (0, 0, 0)
 			pygame.init()
-			size = width, height = 450, 650
+			size = width, height = 550, 650
 			screen = pygame.display.set_mode(size)
 			screen.fill(BLUE)
 			x = 0
@@ -191,6 +198,7 @@ class FourthForm(QMainWindow):
 					self.rect.y = event[1]
 
 
+
 			all_sprites = pygame.sprite.Group()
 			tiles_group = pygame.sprite.Group()
 			bullets = pygame.sprite.Group()
@@ -225,16 +233,17 @@ class FourthForm(QMainWindow):
 				all_sprites.update([x, y])  #генрацию препятствий можно сделать с помощью чтения из файла
 				for event in pygame.event.get():
 					if event.type == pygame.QUIT:
+						shoot_sound3.play()
 						running = False
 				x_pos -= 3    #это движение припятствия
 				tiles_group.update([x_pos, y_pos])
 				if x_pos < -110:
-					x_pos = 400
+					x_pos = 550
 					y_pos = 500
 				xd -= 4
 				dragon_group.update([xd, yd])
 				if xd < - 220:
-					xd = 450
+					xd = 550
 					yd = 200
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:    # это проверка на нажатие пробела
@@ -242,10 +251,18 @@ class FourthForm(QMainWindow):
 					    count_jump = 15
 					    shoot_sound.play()
 					if event.key == pygame.K_UP:
-						bullet_flag = True
-						y2 = y + 50
-						x2 = x + 50
-						shoot_sound2.play()
+						pygame.draw.rect(screen, (255, 150, 0), [230, 280, 20, 100], 0)
+						pygame.draw.rect(screen, (255, 150, 0), [270, 280, 20, 100], 0)
+						pygame.display.flip()
+						pause = True
+						while pause:
+							for event in pygame.event.get():
+								if event.type == pygame.QUIT:
+									pause = False
+							if event.type == pygame.KEYDOWN:
+								if event.key == pygame.K_RETURN:
+									pause = False
+						
 	
 
 				if jump_flag == True:
@@ -278,6 +295,7 @@ class FourthForm(QMainWindow):
 
 				if x == x_pos or x == x_pos + 1 or x == x_pos - 1:
 					count_coins += 1
+
 					 
 
 				screen.fill(BLUE)
@@ -303,7 +321,6 @@ class FourthForm(QMainWindow):
 			f.write(str(count_coins))
 			f.close()
 			pygame.quit()
-
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
