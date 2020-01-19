@@ -7,6 +7,7 @@ import PyQt5
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
+from random import randrange
 
 playing = False
 pygame.mixer.pre_init(44100, -16, 2, 2048)
@@ -24,24 +25,27 @@ class MyWidget(QMainWindow):
 	def __init__(self):
 		super().__init__()
 		uic.loadUi('меню.ui', self)
+		self.pixmap = QPixmap('лул3.jpg')
+		self.back.setPixmap(self.pixmap)
 
 		shoot_sound3.play()
 		self.pushButton.clicked.connect(self.Ruls)
 		self.pushButton_2.clicked.connect(self.play)
 		self.pushButton_3.clicked.connect(self.results)
 		self.pushButton_4.clicked.connect(self.lvl)
+		self.pushButton_5.clicked.connect(self.end)
+
 
 		self.present_coin()
 
 	def present_coin(self):
-		self.pixmap = QPixmap('wolf2.png')
-		self.back.setPixmap(self.pixmap)
 		self.pixmap = QPixmap('moneyka.png')
 		self.label_coin.setPixmap(self.pixmap)
-		self.pushButton_2.setStyleSheet('QPushButton {background-color: #b32828}')
-		self.pushButton_3.setStyleSheet('QPushButton {background-color: #b32828}')
-		self.pushButton.setStyleSheet('QPushButton {background-color: #b32828}')
-		self.pushButton_4.setStyleSheet('QPushButton {background-color: #b32828}')
+		self.pushButton_2.setStyleSheet('QPushButton {background-color: #31adff}')
+		self.pushButton_3.setStyleSheet('QPushButton {background-color: #31adff}')
+		self.pushButton.setStyleSheet('QPushButton {background-color: #31adff}')
+		self.pushButton_4.setStyleSheet('QPushButton {background-color: #31adff}')
+		self.pushButton_5.setStyleSheet('QPushButton {background-color: #31adff}')
 		with open('монеты.txt', 'r') as lines:
 			for o in lines:
 				self.coinss = int(o)
@@ -65,6 +69,9 @@ class MyWidget(QMainWindow):
 	def results(self):
 		self.third_form = ThirdForm()
 		self.third_form.show()
+
+	def end(self):
+		sys.exit()
 
 
 class SecondForm(QMainWindow):
@@ -243,6 +250,13 @@ class FourthForm(QMainWindow):
 			bullet_flag = False
 			simple_flag = False
 			count_coins = 0
+			star_list = []
+
+			for i in range(500):
+				xs = random.randrange(0, 550)
+				ys = random.randrange(0, 650)
+				star_list.append([xs, ys, 2])
+			clock = pygame.time.Clock()
 
 
 
@@ -322,6 +336,14 @@ class FourthForm(QMainWindow):
 					running = False
 
 				screen.fill(BLUE)
+
+				for star in star_list:
+					pygame.draw.circle(screen, (255, 255, 255), star[0:2], 2)
+					star[0] -= star[2]
+					if star[0] < 0:
+					 	star[0] = random.randrange(width, width + 200)
+					 	star[1] = random.randrange(0, 650)
+
 				screen.blit(font.render('Coins: {}'.format(count_coins), 1, (180, 180, 0)), (20, 20))
 				screen.blit(font.render('Health: {}'.format(health2), 1, (180, 180, 0)), (320, 20))
 				all_sprites.draw(screen)
