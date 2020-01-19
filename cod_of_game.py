@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
 
-
 playing = False
 pygame.mixer.pre_init(44100, -16, 2, 2048)
 pygame.mixer.init()
@@ -16,19 +15,21 @@ snd_dir = path.join(path.dirname(__file__), 'data')
 shoot_sound = pygame.mixer.Sound(path.join(snd_dir, 'pew.wav'))
 shoot_sound2 = pygame.mixer.Sound(path.join(snd_dir, 'pew paw.wav'))
 shoot_sound3 = pygame.mixer.Sound(path.join(snd_dir, 'the_vagabond.wav'))
-shoot_sound3.play()
-
-
+health = 100
+black = [0, 0, 0]
 
 
 class MyWidget(QMainWindow):
+
 	def __init__(self):
 		super().__init__()
 		uic.loadUi('меню.ui', self)
 
+		shoot_sound3.play()
 		self.pushButton.clicked.connect(self.Ruls)
 		self.pushButton_2.clicked.connect(self.play)
 		self.pushButton_3.clicked.connect(self.results)
+		self.pushButton_4.clicked.connect(self.lvl)
 
 		self.present_coin()
 
@@ -40,6 +41,7 @@ class MyWidget(QMainWindow):
 		self.pushButton_2.setStyleSheet('QPushButton {background-color: #b32828}')
 		self.pushButton_3.setStyleSheet('QPushButton {background-color: #b32828}')
 		self.pushButton.setStyleSheet('QPushButton {background-color: #b32828}')
+		self.pushButton_4.setStyleSheet('QPushButton {background-color: #b32828}')
 		with open('монеты.txt', 'r') as lines:
 			for o in lines:
 				self.coinss = int(o)
@@ -49,6 +51,10 @@ class MyWidget(QMainWindow):
 	def Ruls(self):
 		self.second_form = SecondForm()
 		self.second_form.show()
+
+	def lvl(self):
+		self.fifth_form = FifthForm()
+		self.fifth_form.show()
 
 	def play(self):
 		playing = True
@@ -66,6 +72,30 @@ class SecondForm(QMainWindow):
 		super().__init__()
 		uic.loadUi('правила.ui', self)
 
+class FifthForm(QMainWindow):
+	def __init__(self):
+		super().__init__()
+		uic.loadUi('levels.ui', self)
+		self.pushButton_h.setStyleSheet('QPushButton {background-color: #b32828}')
+		self.pushButton_s.setStyleSheet('QPushButton {background-color: #b32828}')
+		self.pushButton_n.setStyleSheet('QPushButton {background-color: #b32828}')
+
+		self.pushButton_h.clicked.connect(self.lvvl)
+		self.pushButton_s.clicked.connect(self.lvvl)
+		self.pushButton_n.clicked.connect(self.lvvl)
+	
+	def lvvl(self):
+		global health
+		heath = 0
+		level = self.sender().text()
+		if level == 'SIMPLE':
+			health = 100
+		elif level == 'NORMAL':
+			health = 50
+		elif level == 'HARD':
+			health = 10
+
+
 class ThirdForm(QMainWindow):
 	def __init__(self):
 		super().__init__()
@@ -75,12 +105,14 @@ class ThirdForm(QMainWindow):
 		self.label.setText('\n'.join(lines))
 
 
-
 class FourthForm(QMainWindow):
+
 	def __init__(self, arg):
 		super().__init__()
 		playing = arg
 
+		health2 = health
+		print(health2)
 		if playing == True:
 			BLUE = (0, 0, 0)
 			pygame.init()
@@ -185,29 +217,13 @@ class FourthForm(QMainWindow):
 					self.rect.y = event[1]
 					
 
-			class Bullet(pygame.sprite.Sprite):
-				image = load_image3('bullet.png')
-
-				def __init__(self, group):
-					super().__init__(group)
-					self.image = Bullet.image
-					self.rect = self.image.get_rect()
-
-				def update(self, event):
-					self.rect.x = event[0]
-					self.rect.y = event[1]
-
-
-
 			all_sprites = pygame.sprite.Group()
 			tiles_group = pygame.sprite.Group()
-			bullets = pygame.sprite.Group()
 			dragon_group = pygame.sprite.Group()
 
 
 			Tile(tiles_group)
 			Bird(all_sprites)
-			Bullet(bullets)
 			Dragon(dragon_group)
 			count_jump = 15
 			jump_flag = False
@@ -217,34 +233,44 @@ class FourthForm(QMainWindow):
 			diaposon_of_mob2 = []
 			for i in range(140, 300):
 				diaposon_of_mob2.append(i)
+
 			x_pos = 450
 			y_pos = 500
 			xd = 450
 			yd = 200
+
 			height = []
 			bullet_flag = False
 			simple_flag = False
 			count_coins = 0
 
- 
+
 
 			running = True
 			while running:
-				all_sprites.update([x, y])  #генрацию препятствий можно сделать с помощью чтения из файла
+
+				font = pygame.font.Font(None, 60)
+				all_sprites.update([x, y])  
+
 				for event in pygame.event.get():
 					if event.type == pygame.QUIT:
 						shoot_sound3.play()
 						running = False
-				x_pos -= 3    #это движение припятствия
+						playing = False
+				
+				x_pos -= 5
 				tiles_group.update([x_pos, y_pos])
 				if x_pos < -110:
 					x_pos = 550
 					y_pos = 500
+				
 				xd -= 4
 				dragon_group.update([xd, yd])
 				if xd < - 220:
 					xd = 550
 					yd = 200
+
+
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:    # это проверка на нажатие пробела
 					    jump_flag = True      
@@ -279,32 +305,31 @@ class FourthForm(QMainWindow):
 							shoot_sound.play()
 
 				if y in diaposon_of_mob and (x + 90 >= x_pos and x <= (x_pos + 75)):
-					running = False
-					print('game over')
+					health2 -= 1
 				if y in diaposon_of_mob2 and (x + 65 >= xd and x <= (xd + 100)):
-					running = False
+					health2 -= 1
 				if y == 550:
-					running = False
+					health2 -= 1
 				if y < -100:
-					running = False
+					health2 -= 1
 
-				if bullet_flag:
-					x2 += 1 
-					bullets.update([x2, y2])
 
 
 				if x == x_pos or x == x_pos + 1 or x == x_pos - 1:
 					count_coins += 1
 
-					 
+				if health2 <= 0:
+					running = False
 
 				screen.fill(BLUE)
+				screen.blit(font.render('Coins: {}'.format(count_coins), 1, (180, 180, 0)), (20, 20))
+				screen.blit(font.render('Health: {}'.format(health2), 1, (180, 180, 0)), (320, 20))
 				all_sprites.draw(screen)
 				tiles_group.draw(screen)
-				bullets.draw(screen)
 				dragon_group.draw(screen)
 				pygame.display.flip()
 				pygame.time.wait(8)   #обновляем экран и ставим подходящую скорость
+
 
 			coins2 = 0
 			with open('монеты.txt', 'r') as lines:
